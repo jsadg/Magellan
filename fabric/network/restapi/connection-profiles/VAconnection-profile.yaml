@@ -1,0 +1,165 @@
+---
+name: va-claims-system
+
+client:
+  organization: VA
+  credentialStore:
+    path: ./wallets/VAwallet
+    identity: va.admin
+  connectionTimeout: 300s
+  orderer:
+    url: grpcs://localhost:7050
+
+channels:
+  orgschannel:
+    orderer: grpcs://localhost:7050
+    peers:
+      peer1-healthcare:
+        url: grpcs://localhost:7051
+      peer2-healthcare:
+        url: grpcs://localhost:8051
+      peer1-veteran:
+        url: grpcs://localhost:9051
+      peer2-veteran:
+        url: grpcs://localhost:10051
+      peer1-insurance:
+        url: grpcs://localhost:11051
+      peer2-insurance:
+        url: grpcs://localhost:12051
+      peer1-va:
+        url: grpcs://localhost:13051
+      peer2-va:
+        url: grpcs://localhost:14051
+
+
+organizations:
+  Healthcare:
+    mspid: HealthcareMSP
+    peers:
+      - peer1-healthcare
+      - peer2-healthcare
+    certificateAuthorities:
+      - healthcare-ca
+  Veteran:
+    mspid: VeteranMSP
+    peers:
+      - peer1-veteran
+      - peer2-veteran
+    certificateAuthorities:
+      - veteran-ca
+  Insurance:
+    mspid: InsuranceMSP
+    peers:
+      - peer1-insurance
+      - peer2-insurance
+    certificateAuthorities:
+      - insurance-ca
+  VA:
+    mspid: VAMSP
+    peers:
+      - peer1-va
+      - peer2-va
+    certificateAuthorities:
+      - va-ca
+
+orderers:
+  orderer0-orderers:
+    url: grpcs://localhost:7050
+    grpcOptions:
+      ssl-target-name-override:
+        - orderer0-orderers
+    tlsCACerts:
+      path: /var/hyperledger/orderers/orderer/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+
+peers:
+  peer1-healthcare:
+    url: grpcs://localhost:7051
+    tlsCACerts:
+      path: /var/hyperledger/healthcare/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+    grpcOptions:
+      ssl-target-name-override: peer1-healthcare
+  peer2-healthcare:
+    url: grpcs://localhost:8051
+    tlsCACerts:
+      path: /var/hyperledger/healthcare/peer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+    grpcOptions:
+      ssl-target-name-override: peer2-healthcare
+  peer1-veteran:
+    url: grpcs://localhost:9051
+    tlsCACerts:
+      path: /var/hyperledger/veteran/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+    grpcOptions:
+      ssl-target-name-override: peer1-veteran
+  peer2-veteran:
+    url: grpcs://localhost:10051
+    tlsCACerts:
+      path: /var/hyperledger/veteran/peer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+    grpcOptions:
+      ssl-target-name-override: peer2-veteran
+  peer1-insurance:
+    url: grpcs://localhost:11051
+    tlsCACerts:
+      path: /var/hyperledger/insurance/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+    grpcOptions:
+      ssl-target-name-override: peer1-insurance
+  peer2-insurance:
+    url: grpcs://localhost:12051
+    tlsCACerts:
+      path: /var/hyperledger/insurance/peer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+    grpcOptions:
+      ssl-target-name-override: peer2-insurance
+  peer1-va:
+    url: grpcs://localhost:13051
+    tlsCACerts:
+      path: /var/hyperledger/va/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+    grpcOptions:
+      ssl-target-name-override: peer1-va
+  peer2-va:
+    url: grpcs://localhost:14051
+    tlsCACerts:
+      path: /var/hyperledger/veteran/peer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+    grpcOptions:
+      ssl-target-name-override: peer2-va
+
+certificateAuthorities:
+  orderers-ca:
+    url: http://localhost:7053
+    caName: orderers-ca
+    registrar:
+        enrollId: admin
+        enrollSecret: adminpw
+    tlsCACerts:
+      path: /var/hyperledger/orderers/ca/admin/msp/cacerts/0-0-0-0-7053.pem
+  healthcare-ca:
+    url: http://localhost:7054
+    caName: healthcare-ca
+    registrar:
+        enrollId: admin
+        enrollSecret: adminpw
+    tlsCACerts:
+      path: /var/hyperledger/healthcare/ca/admin/msp/cacerts/0-0-0-0-7054.pem
+  veteran-ca:
+    url: http://localhost:7055
+    caName: veteran-ca
+    registrar:
+        enrollId: admin
+        enrollSecret: adminpw
+    tlsCACerts:
+      path: /var/hyperledger/veteran/ca/admin/msp/cacerts/0-0-0-0-7055.pem
+  insurance-ca:
+    url: http://localhost:7056
+    caName: insurance-ca
+    registrar:
+        enrollId: admin
+        enrollSecret: adminpw
+    tlsCACerts:
+      path: /var/hyperledger/insurance/ca/admin/msp/cacerts/0-0-0-0-7056.pem
+  va-ca:
+    url: http://localhost:7057
+    caName: va-ca
+    registrar:
+        enrollId: admin
+        enrollSecret: adminpw
+    tlsCACerts:
+      path: /var/hyperledger/va/ca/admin/msp/cacerts/0-0-0-0-7057.pem
+

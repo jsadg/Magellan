@@ -1,0 +1,20 @@
+[
+    {
+       "name": "HealthRecords",
+       "policy": "OR('VAMSP.member', 'HealthcareMSP.member', 'VeteranMSP.member')",
+       "requiredPeerCount": 1,
+       "maxPeerCount": 4,
+       "blockToLive":0,
+       "memberOnlyRead": true,
+       "memberOnlyWrite": true
+    },
+    {
+        "name": "UserInformation",
+        "policy": "OR('VAMSP.member', 'HealthcareMSP.member','VeteranMSP.member','InsuranceMSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 8,
+        "blockToLive":0,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true
+     }
+]

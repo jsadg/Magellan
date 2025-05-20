@@ -1,0 +1,7 @@
+{
+  "index": {
+    "fields": ["Status"]
+  },
+  "name": "StatusIndex",
+  "type": "json"
+}

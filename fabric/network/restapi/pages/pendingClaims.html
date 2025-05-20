@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Claims</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1>Pending Claims</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Disability Percent</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="claimsTable">
+            <!-- Claims data will be injected here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Fetch claims from the server
+    $(document).ready(function() {
+        $.ajax({
+            url: '/api/pendingClaims', // Adjust the API endpoint
+            method: 'GET',
+            success: function(data) {
+                let claimsTable = $('#claimsTable');
+                claimsTable.empty(); // Clear any previous data
+
+                // Loop through the claims data and populate the table
+                data.forEach(function(claim) {
+                    let row = `<tr>
+                        <td>${claim.ClaimInfo.ClaimID}</td>
+                        <td>${claim.UserInfo.Name}</td>
+                        <td>${claim.UserInfo.Email}</td>
+                        <td>${claim.ClaimInfo.DisabilityPercent}%</td>
+                        <td>${claim.ClaimInfo.Status}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm" onclick="viewClaim('${claim.ClaimInfo.ClaimID}')">View</button>
+                            <button class="btn btn-warning btn-sm" onclick="approveClaim('${claim.ClaimInfo.ClaimID}')">Approve</button>
+                            <button class="btn btn-danger btn-sm" onclick="rejectClaim('${claim.ClaimInfo.ClaimID}')">Reject</button>
+                        </td>
+                    </tr>`;
+                    claimsTable.append(row);
+                });
+            },
+            error: function(error) {
+                alert('Failed to load claims');
+            }
+        });
+    });
+
+    // Function to view a specific claim
+    function viewClaim(claimID) {
+        alert('View details for claim: ' + claimID);
+        // Redirect to a new page or show a modal with claim details
+    }
+
+    // Function to approve a claim
+    function approveClaim(claimID) {
+        alert('Approving claim: ' + claimID);
+        // You can add a request to approve the claim via the API
+    }
+
+    // Function to reject a claim
+    function rejectClaim(claimID) {
+        alert('Rejecting claim: ' + claimID);
+        // You can add a request to reject the claim via the API
+    }
+</script>
+
+</body>
+</html>

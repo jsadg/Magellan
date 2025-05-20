@@ -1,0 +1,223 @@
+---
+Organizations:
+
+    - &Orderers
+        Name: OrderersMSP
+        ID: OrderersMSP
+        MSPDir: /var/hyperledger/orderers/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('OrderersMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('OrderersMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('OrderersMSP.admin')"
+        OrdererEndpoints:
+            - orderer0-orderers:7050
+
+    - &Healthcare
+        Name: HealthcareMSP
+        ID: HealthcareMSP
+        MSPDir: /var/hyperledger/healthcare/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('HealthcareMSP.admin', 'HealthcareMSP.peer', 'HealthcareMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('HealthcareMSP.admin', 'HealthcareMSP.peer')"
+            Admins:
+                Type: Signature
+                Rule: "OR('HealthcareMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('HealthcareMSP.peer')"
+
+        AnchorPeers:
+            - Host: peer1-healthcare
+              Port: 7051
+
+    - &Veteran
+        Name: VeteranMSP
+        ID: VeteranMSP
+        MSPDir: /var/hyperledger/veteran/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('VeteranMSP.admin', 'VeteranMSP.peer', 'VeteranMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('VeteranMSP.admin', 'VeteranMSP.peer')"
+            Admins:
+                Type: Signature
+                Rule: "OR('VeteranMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('VeteranMSP.peer')"
+
+        AnchorPeers:
+            - Host: peer1-veteran
+              Port: 9051
+      
+    - &Insurance
+        Name: InsuranceMSP
+        ID: InsuranceMSP
+        MSPDir: /var/hyperledger/insurance/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.peer', 'InsuranceMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.peer')"
+            Admins:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.peer')"
+
+        AnchorPeers:
+            - Host: peer1-insurance
+              Port: 11051
+
+    - &VA
+        Name: VAMSP
+        ID: VAMSP
+        MSPDir: /var/hyperledger/va/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('VAMSP.admin', 'VAMSP.peer', 'VAMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('VAMSP.admin', 'VAMSP.peer')"
+            Admins:
+                Type: Signature
+                Rule: "OR('VAMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('VAMSP.peer')"
+
+        AnchorPeers:
+            - Host: peer1-va
+              Port: 13051
+
+
+Capabilities:
+
+    Channel: &ChannelCapabilities
+        V2_0: true
+    Orderer: &OrdererCapabilities
+        V2_0: true
+    Application: &ApplicationCapabilities
+        V2_0: true
+
+
+Application: &ApplicationDefaults
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "ANY Endorsement"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+    OrdererType: etcdraft
+
+    EtcdRaft:
+        Consenters:
+        - Host: orderer0-orderers
+          Port: 7050
+          ClientTLSCert: /var/hyperledger/orderers/orderer/tls-msp/signcerts/cert.pem
+          ServerTLSCert: /var/hyperledger/orderers/orderer/tls-msp/signcerts/cert.pem
+
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+
+Channel: &ChannelDefaults
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ChannelCapabilities
+
+
+
+Profiles:
+
+  OrgsOrdererGenesis:
+      <<: *ChannelDefaults
+      Orderer:
+          <<: *OrdererDefaults
+          Organizations:
+              - *Orderers
+          Capabilities:
+              <<: *OrdererCapabilities
+      Consortiums:
+          SampleConsortium:
+              Organizations:
+                  - *Healthcare
+                  - *Veteran
+                  - *Insurance
+                  - *VA
+
+  OrgsChannel:
+      Consortium: SampleConsortium
+      <<: *ChannelDefaults
+      Orderer:
+        <<: *OrdererDefaults
+        OrdererType: etcdraft
+      Application:
+          <<: *ApplicationDefaults
+          Organizations:
+              - *Healthcare
+              - *Veteran
+              - *Insurance
+              - *VA
+          Capabilities:
+              <<: *ApplicationCapabilities
